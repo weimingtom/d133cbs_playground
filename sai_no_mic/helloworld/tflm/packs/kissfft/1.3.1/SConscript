@@ -1,0 +1,27 @@
+# RT-Thread building script for bridge
+
+from building import *
+
+Import('rtconfig')
+
+
+cwd = GetCurrentDir()
+objs = []
+list = os.listdir(cwd)
+#cwd     = GetCurrentDir()
+src     = Glob('*.c')
+
+CPPPATH = [cwd]
+ASFLAGS = ''
+CFLAGS = ''
+
+#group = DefineGroup('TENSORFLOWLITEMICRO', src, depend = [''], CPPPATH = CPPPATH, ASFLAGS = ASFLAGS)
+group   = DefineGroup('TENSORFLOWLITEMICRO', src, depend = [''], CPPPATH = CPPPATH, CFLAGS=CFLAGS)
+
+list = os.listdir(cwd)
+#print(list)
+for item in list:
+    if os.path.isfile(os.path.join(cwd, item, 'SConscript')):
+        group = group + SConscript(os.path.join(item, 'SConscript'))
+
+Return('group')

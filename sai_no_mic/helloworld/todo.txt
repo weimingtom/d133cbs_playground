@@ -1,0 +1,141 @@
+TF_LITE_STATIC_MEMORY
+
+printf
+->
+plintf
+
+list files, search 
+src = Split('''
+
+
+#ifdef TF_LITE_STATIC_MEMORY
+#define TF_LITE_REMOVE_VIRTUAL_DELETE \
+  void operator delete(void* p) {}
+#else
+#error TF_LITE_STATIC_MEMORY
+#define TF_LITE_REMOVE_VIRTUAL_DELETE
+#endif
+
+-----
+
+D:\luban-lite-master\packages\artinchip\lvgl-ui\aic_ui.c
+aic_ui_init
+
+-----
+
+D:\luban-lite-master\packages\artinchip\lvgl-ui\lv_demo.c
+
+**comment this line:**
+
+INIT_APP_EXPORT(lvgl_thread_init);
+
+------
+aiburn v1.3.6
+
+------
+Luban-Lite Env Tool for Windows (V1.3.5)
+
+admin@LAPTOP-ASHRA023 D:\luban-lite-master
+> scons -j8
+scons: Reading SConscript files ...
+args.outfile:  D:\luban-lite-master/partition_table.h
+
+scons: warning: No version of Visual Studio compiler found - C/C++ compilers most likely not set correctly
+File "D:\luban-lite-master\SConstruct", line 20, in <module>
+Newlib version:3.2.0
+D:\luban-lite-master\kernel\rt-thread
+scons: done reading SConscript files.
+scons: Building targets ...
+scons: building associated VariantDir targets: output\d13x_demo88-nor_rt-thread_helloworld
+  CC packages\artinchip\lvgl-ui\lv_demo.c
+LINK output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+-rw-r--r-- 1 14438248 Nov 12 09:27 output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+
+riscv64-unknown-elf-objcopy -O binary output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x.bin
+riscv64-unknown-elf-size output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+   text    data     bss     dec     hex filename
+ 661116  244600  103400 1009116   f65dc output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+python3 D:\luban-lite-master\tools/scripts/linked_size.py -m D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x.map
+python3 D:\luban-lite-master\tools/scripts/makefatfs.py --auto --cluster 8 --sector 512 --tooldir D:\luban-lite-master\tools/scripts/ --inputdir D:\luban-lite-master/packages/artinchip/lvgl-ui/aic_demo/meter_demo/lvgl_src --outfile D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/rodata.fatfs
+python3 D:\luban-lite-master\tools/scripts/makelittlefs.py --pagesize 256 --blocksize 4096 --tooldir D:\luban-lite-master\tools/scripts/ --inputdir D:\luban-lite-master/packages/artinchip/lvgl-ui/aic_demo/meter_demo/lvgl_src/ --outfile D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/data.lfs
+D:\luban-lite-master\tools/scripts/mk_private_resource.exe -v -l D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/pbp_cfg.json,D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/partition.json -o D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/pbp_cfg.bin
+psram
+python3 D:\luban-lite-master\tools/scripts/elf_parse.py output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/ riscv64-unknown-elf-
+D:\luban-lite-master\tools/scripts/mk_image.exe -v -c D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/image_cfg.json -d D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/
+        Creating D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x_os.itb ...
+        Creating D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/bootloader.aic ...
+        Image header is generated.
+        Meta data for image components:
+                Meta for image.updater.spl         offset 0x1400     size 0x26110 (155920)
+                Meta for image.info                offset 0x0        size 0x800 (2048)
+                Meta for image.target.spl          offset 0x27c00    size 0x26110 (155920)
+                Meta for image.target.os           offset 0x4e400    size 0xde000 (909312)
+                Meta for image.target.rodata       offset 0x12c400   size 0x204000 (2113536)
+                Meta for image.target.data         offset 0x330400   size 0x700000 (7340032)
+        Packing file data:
+                bootloader.aic
+                bootloader.aic
+                d13x_os.itb
+                rodata.fatfs
+                data.lfs
+        Image file is generated: D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x_demo88-nor_v1.0.0.img
+
+
+
+Luban-Lite is built successfully
+
+scons: done building targets.
+
+admin@LAPTOP-ASHRA023 D:\luban-lite-master
+> scons -j8
+scons: Reading SConscript files ...
+args.outfile:  D:\luban-lite-master/partition_table.h
+
+scons: warning: No version of Visual Studio compiler found - C/C++ compilers most likely not set correctly
+File "D:\luban-lite-master\SConstruct", line 20, in <module>
+Newlib version:3.2.0
+D:\luban-lite-master\kernel\rt-thread
+scons: done reading SConscript files.
+scons: Building targets ...
+scons: building associated VariantDir targets: output\d13x_demo88-nor_rt-thread_helloworld
+  CC packages\artinchip\lvgl-ui\lv_demo.c
+LINK output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+-rw-r--r-- 1 11484028 Nov 12 09:29 output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+
+riscv64-unknown-elf-objcopy -O binary output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x.bin
+riscv64-unknown-elf-size output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+   text    data     bss     dec     hex filename
+ 449100  187404   68776  705280   ac300 output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf
+python3 D:\luban-lite-master\tools/scripts/linked_size.py -m D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x.map
+python3 D:\luban-lite-master\tools/scripts/makefatfs.py --auto --cluster 8 --sector 512 --tooldir D:\luban-lite-master\tools/scripts/ --inputdir D:\luban-lite-master/packages/artinchip/lvgl-ui/aic_demo/meter_demo/lvgl_src --outfile D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/rodata.fatfs
+python3 D:\luban-lite-master\tools/scripts/makelittlefs.py --pagesize 256 --blocksize 4096 --tooldir D:\luban-lite-master\tools/scripts/ --inputdir D:\luban-lite-master/packages/artinchip/lvgl-ui/aic_demo/meter_demo/lvgl_src/ --outfile D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/data.lfs
+D:\luban-lite-master\tools/scripts/mk_private_resource.exe -v -l D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/pbp_cfg.json,D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/partition.json -o D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/pbp_cfg.bin
+psram
+python3 D:\luban-lite-master\tools/scripts/elf_parse.py output\d13x_demo88-nor_rt-thread_helloworld\images\d13x.elf D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/ riscv64-unknown-elf-
+D:\luban-lite-master\tools/scripts/mk_image.exe -v -c D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/image_cfg.json -d D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/
+        Creating D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x_os.itb ...
+        Creating D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/bootloader.aic ...
+        Image header is generated.
+        Meta data for image components:
+                Meta for image.updater.spl         offset 0x1400     size 0x26110 (155920)
+                Meta for image.info                offset 0x0        size 0x800 (2048)
+                Meta for image.target.spl          offset 0x27c00    size 0x26110 (155920)
+                Meta for image.target.os           offset 0x4e400    size 0x9c000 (638976)
+                Meta for image.target.rodata       offset 0xea400    size 0x204000 (2113536)
+                Meta for image.target.data         offset 0x2ee400   size 0x700000 (7340032)
+        Packing file data:
+                bootloader.aic
+                bootloader.aic
+                d13x_os.itb
+                rodata.fatfs
+                data.lfs
+        Image file is generated: D:\luban-lite-master\output/d13x_demo88-nor_rt-thread_helloworld/images/d13x_demo88-nor_v1.0.0.img
+
+
+
+Luban-Lite is built successfully
+
+scons: done building targets.
+
+admin@LAPTOP-ASHRA023 D:\luban-lite-master
+>

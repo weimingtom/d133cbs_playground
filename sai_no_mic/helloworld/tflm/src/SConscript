@@ -1,0 +1,70 @@
+from building import *
+import os
+
+src = Split('''
+micro_features/micro_features_generator.cc
+micro_features/micro_model_settings.cc
+micro_features/model.cc
+micro_features/no_micro_features_data.cc
+micro_features/yes_micro_features_data.cc
+
+test/no_30ms_sample_data.cc
+test/no_1000ms_sample_data.cc
+test/yes_30ms_sample_data.cc
+test/yes_1000ms_sample_data.cc
+
+micro_frontend/lib/fft.cc
+micro_frontend/lib/fft_io.c
+micro_frontend/lib/fft_util.cc
+micro_frontend/lib/fft_util.cc
+micro_frontend/lib/filterbank.c
+micro_frontend/lib/filterbank_io.c
+micro_frontend/lib/filterbank_util.c
+micro_frontend/lib/frontend.c
+micro_frontend/lib/frontend_io.c
+micro_frontend/lib/frontend_util.c
+micro_frontend/lib/log_lut.c
+micro_frontend/lib/log_scale.c
+micro_frontend/lib/log_scale_io.c
+micro_frontend/lib/log_scale_util.c
+micro_frontend/lib/noise_reduction.c
+micro_frontend/lib/noise_reduction_io.c
+micro_frontend/lib/noise_reduction_util.c
+micro_frontend/lib/pcan_gain_control.c
+micro_frontend/lib/pcan_gain_control_util.c
+micro_frontend/lib/window.c
+micro_frontend/lib/window_io.c
+micro_frontend/lib/window_util.c
+
+micro_frontend/lib/malloc.c
+''') + Glob('*.c') + Glob('*.cc')
+tflm_pkg = ""
+
+#.
+root =  str(Dir('#'))
+packages = os.path.join(root, 'packages')
+file_list = os.listdir(packages)
+for f in file_list:
+    if(f.split('-')[0] == 'TensorflowLiteMicro'):
+        tflm_pkg = os.path.join(packages, f)
+        break
+#./third_party/flatbuffer/include
+flatbuffer = os.path.join(tflm_pkg, "third_party/flatbuffers/include")
+#./third_party/gemmlowp
+gemmlowp = os.path.join(tflm_pkg, "third_party/gemmlowp")
+#./third_party/kissfft
+kissfft = os.path.join(tflm_pkg, "third_party/kissfft")
+#./third_party/ruy
+ruy = os.path.join(tflm_pkg, "third_party/ruy")
+#./tensorflow/lite/micro/tools/make/downloads
+cmsis = os.path.join(tflm_pkg, "tensorflow/lite/micro/tools/")
+
+CFLAGS = ' -DTF_LITE_STATIC_MEMORY '
+CXXFLAGS = " -fpermissive -DTF_LITE_STATIC_MEMORY "
+
+cwd     = GetCurrentDir()
+CPPPATH = [tflm_pkg, flatbuffer, gemmlowp, kissfft, ruy, cmsis, cwd]
+
+group = DefineGroup('lite/micro', src, depend = [''], CPPPATH = CPPPATH, CXXFLAGS = CXXFLAGS, CFLAGS=CFLAGS)
+
+Return('group')

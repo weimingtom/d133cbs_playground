@@ -1,0 +1,114 @@
+﻿/*
+ * Copyright (c) 2022, ArtInChip Technology Co., Ltd
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Authors: weilin.peng@artinchip.com
+ */
+#include <stdio.h>
+#include <rtthread.h>
+
+#ifdef AIC_AB_SYSTEM_INTERFACE
+#include <absystem.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <dfs.h>
+#include <dfs_fs.h>
+#endif
+
+#ifdef AIC_LVGL_DEMO
+#include "lvgl.h"
+
+extern void lv_port_disp_init(void);
+extern void lv_port_indev_init(void);
+extern void lv_user_gui_init(void);
+#endif
+
+#include "rtdevice.h"
+#include "board.h"
+#include "st7735.h"
+#include "app/ui.h"
+
+#ifdef AIC_LVGL_DEMO
+// lvgl 测试控件
+void lv_border_style_test(){
+    static lv_style_t style;
+    lv_style_init(&style); // 初始化样式
+    lv_style_reset(&style); // 重置样式
+    lv_style_set_radius(&style, 10); // 设置样式圆角弧度
+    lv_style_set_bg_opa(&style, LV_OPA_COVER); // 设置样式背景的透明度，不透明
+    lv_style_set_bg_color(&style, lv_palette_lighten(LV_PALETTE_RED, 1)); // 设置样式的背景色为淡红色
+
+    lv_style_set_border_color(&style, lv_color_black()); // 设置样式边框颜色为黑色
+    lv_style_set_border_width(&style, 5); // 设置边框宽度
+    lv_style_set_border_opa(&style, LV_OPA_50);  // 设置边框透明度
+    // 设置边框范围顶部、底部、右边、左边
+    lv_style_set_border_side(&style, LV_BORDER_SIDE_TOP | LV_BORDER_SIDE_BOTTOM | LV_BORDER_SIDE_RIGHT | LV_BORDER_SIDE_LEFT);
+
+    lv_obj_t * obj = lv_obj_create(lv_scr_act()); // 基于屏幕创建对象
+    if (obj != NULL){
+        lv_obj_add_style(obj, &style, 0); // 给对象添加样式
+        lv_obj_set_size(obj, 200, 200);
+        lv_obj_center(obj); // 对象居中显示
+    }
+}
+#endif
+
+int main(void){
+printf("AIC_AB_SYSTEM_INTERFACE 2023-12-18  \n");
+#if 0  // IO 翻转  这个不应该在这里加载 while(1) 会影响MSH
+    rt_base_t LED = rt_pin_get("PA.4");
+    rt_pin_mode(LED,PIN_MODE_OUTPUT);
+    while(1){
+        rt_pin_write(LED, 1);
+        rt_pin_write(LED, 0);
+    }
+#endif
+#if 0 // SPI 小屏幕加载 这个不应该在这里加载 while(1) 会影响MSH
+    LCD_Init();//LCD 
+	LCD_Fill(0,0,LCD_W,LCD_H,WHITE);
+	while(1){
+		LCD_ShowString(10,20,"ArtInChip",RED,WHITE,16,0);
+        LCD_ShowString(10,60,"welcom",RED,WHITE,16,0);
+    }
+#endif
+
+#ifdef AIC_AB_SYSTEM_INTERFACE
+    char target[32] = { 0 };
+
+    aic_ota_status_update();
+    aic_get_rodata_to_mount(target);
+    printf("Mount APP in blk %s\n", target);
+
+    if (dfs_mount(target, "/rodata", "elm", 0, 0) < 0)
+        printf("Failed to mount elm\n");
+#endif
+    return 0;
+}
+#if 1
+//任务内容
+static void lvgl_thread(void *parameter){
+    lv_init(); //LVGL 初始化
+    lv_port_disp_init();  //LVGL 显示初始化 需要去做配置
+    //lv_demo_widgets();  //lvgl 官方demo
+    //lv_user_gui_init(); //artinchip官方demo
+    //lv_border_style_test(); // 自定义小方块显示
+	ui_init();  // 自定义消毒机UI
+    rt_kprintf("\n ui_init \n");
+    while (1){
+        lv_task_handler(); //周期性调用事务处理器
+        rt_thread_mdelay(1);
+    }
+}
+// 初始化创建一个任务
+static int lvgl_demo_init(void){
+    rt_thread_t tid;
+    tid = rt_thread_create("LVGL", lvgl_thread, RT_NULL, 4096,10, 10); //创建一个任务
+    if (tid == RT_NULL){
+        rt_kprintf("Fail to create 'LVGL' thread\n");
+    }
+    rt_thread_startup(tid);// 启动任务
+    return 0;
+}
+INIT_APP_EXPORT(lvgl_demo_init); //应用自动初始化 可以放在任意文件下 RTT 上电后会按顺序加载
+#endif
